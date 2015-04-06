@@ -67,11 +67,7 @@
 #include <string.h>      /* memcpy, memmove */
 #include <stdio.h>       /* debug : printf */
 #include "zstd_static.h"
-#if defined(__clang__) || defined(__GNUC__)
-#  include "fse.c"       /* due to GCC/Clang inlining limitations, including *.c runs noticeably faster */
-#else
-#  include "fse_static.h"
-#endif
+#include "fse_static.h"
 
 
 /********************************************************
@@ -300,7 +296,7 @@ typedef struct {
     BYTE* dumps;
 } seqStore_t;
 
-void ZSTD_resetSeqStore(seqStore_t* ssPtr)
+static void ZSTD_resetSeqStore(seqStore_t* ssPtr)
 {
     ssPtr->offset = ssPtr->offsetStart;
     ssPtr->lit = ssPtr->litStart;
@@ -336,7 +332,7 @@ ZSTD_cctx_t ZSTD_createCCtx(void)
     return (ZSTD_cctx_t)ctx;
 }
 
-void ZSTD_resetCCtx(ZSTD_cctx_t cctx)
+static void ZSTD_resetCCtx(ZSTD_cctx_t cctx)
 {
     cctxi_t* ctx = (cctxi_t*)cctx;
     ctx->base = NULL;
@@ -590,7 +586,7 @@ static size_t ZSTD_compressLiterals_usingCTable(void* dst, size_t dstSize,
 }
 
 
-size_t ZSTD_minGain(size_t srcSize)
+static size_t ZSTD_minGain(size_t srcSize)
 {
     return (srcSize >> 6) + 1;
 }
@@ -1213,7 +1209,7 @@ size_t ZSTD_compress(void* dst, size_t maxDstSize, const void* src, size_t srcSi
 *   Decompression code
 **************************************************************/
 
-size_t ZSTD_getcBlockSize(const void* src, size_t srcSize, blockProperties_t* bpPtr)
+static size_t ZSTD_getcBlockSize(const void* src, size_t srcSize, blockProperties_t* bpPtr)
 {
     const BYTE* const in = (const BYTE* const)src;
     BYTE headerFlags;
@@ -1338,7 +1334,7 @@ static size_t ZSTD_decompressLiterals(void* ctx, void* dst, size_t maxDstSize,
 }
 
 
-size_t ZSTD_decodeLiteralsBlock(void* ctx,
+static size_t ZSTD_decodeLiteralsBlock(void* ctx,
                                 void* dst, size_t maxDstSize,
                           const BYTE** litPtr,
                           const void* src, size_t srcSize)
@@ -1381,7 +1377,7 @@ size_t ZSTD_decodeLiteralsBlock(void* ctx,
 }
 
 
-size_t ZSTD_decodeSeqHeaders(size_t* lastLLPtr, const BYTE** dumpsPtr,
+static size_t ZSTD_decodeSeqHeaders(size_t* lastLLPtr, const BYTE** dumpsPtr,
                                void* DTableLL, void* DTableML, void* DTableOffb,
                          const void* src, size_t srcSize)
 {

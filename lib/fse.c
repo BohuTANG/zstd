@@ -513,8 +513,8 @@ CTable is a variable size structure which contains :
     FSE_symbolCompressionTransform symbolTT[maxSymbolValue+1];  // This size is variable
 Allocation is manual, since C standard does not support variable-size structures.
 */
-
-size_t FSE_sizeof_CTable (unsigned maxSymbolValue, unsigned tableLog)
+#if 0
+static size_t FSE_sizeof_CTable (unsigned maxSymbolValue, unsigned tableLog)
 {
     size_t size;
     FSE_STATIC_ASSERT((size_t)FSE_CTABLE_SIZE_U32(FSE_MAX_TABLELOG, FSE_MAX_SYMBOL_VALUE)*4 >= sizeof(CTable_max_t));   /* A compilation error here means FSE_CTABLE_SIZE_U32 is not large enough */
@@ -522,6 +522,7 @@ size_t FSE_sizeof_CTable (unsigned maxSymbolValue, unsigned tableLog)
     size = FSE_CTABLE_SIZE_U32 (tableLog, maxSymbolValue) * sizeof(U32);
     return size;
 }
+#endif
 
 void* FSE_createCTable (unsigned maxSymbolValue, unsigned tableLog)
 {
@@ -555,7 +556,8 @@ typedef struct
     U32 count;
 } rank_t;
 
-int FSE_compareRankT(const void* r1, const void* r2)
+#if 0
+static int FSE_compareRankT(const void* r1, const void* r2)
 {
     const rank_t* R1 = (const rank_t*)r1;
     const rank_t* R2 = (const rank_t*)r2;
@@ -564,7 +566,6 @@ int FSE_compareRankT(const void* r1, const void* r2)
 }
 
 
-#if 0
 static size_t FSE_adjustNormSlow(short* norm, int pointsToRemove, const unsigned* count, U32 maxSymbolValue)
 {
     rank_t rank[FSE_MAX_SYMBOL_VALUE+2];
@@ -1348,7 +1349,7 @@ size_t FSE_decompress(void* dst, size_t maxDstSize, const void* cSrc, size_t cSr
 
 
 /* Function templates */
-size_t FSE_FUNCTION_NAME(FSE_count_generic, FSE_FUNCTION_EXTENSION) (unsigned* count, const FSE_FUNCTION_TYPE* source, size_t sourceSize, unsigned* maxSymbolValuePtr, unsigned safe)
+static size_t FSE_FUNCTION_NAME(FSE_count_generic, FSE_FUNCTION_EXTENSION) (unsigned* count, const FSE_FUNCTION_TYPE* source, size_t sourceSize, unsigned* maxSymbolValuePtr, unsigned safe)
 {
     const FSE_FUNCTION_TYPE* ip = source;
     const FSE_FUNCTION_TYPE* const iend = ip+sourceSize;
